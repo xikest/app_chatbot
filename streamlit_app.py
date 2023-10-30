@@ -77,8 +77,8 @@ def main():
         st.write(
             """     
             - STT(Speech-To-Text): OpenAI의 Whisper AI 
-            - TTS(Text-To-Speech):Google Translate TTS
-            - Engine: OpenAI의 GPT 모델. 
+            - TTS(Text-To-Speech): Google Translate TTS
+            - Engine: OpenAI GPT 
             """
         )
 
@@ -101,6 +101,13 @@ def main():
         mode = st.radio(label="Mode", options=["질문하기", "번역하기"])
 
         st.markdown("---")
+
+        uploaded_file = st.file_uploader("파일을 업로드하세요", type='csv')
+        if uploaded_file is not None:
+            audio_local = open("output.mp3", "rb")
+
+        st.markdown("---")
+
         # 리셋 버튼 생성
         if st.button(label="초기화"):
             # 리셋 코드
@@ -112,9 +119,10 @@ def main():
     with col1:
         st.subheader("질문하기")
         # 음성 녹음 아이콘
-        # if 오디오 파일을 불러온다면
-        # audio = open("output.mp3", "rb")
-        audio = audiorecorder("click to record", "recording...")
+        if audio_local:
+            audio = audio_local
+        else:
+            audio = audiorecorder("click to record", "recording...")
         if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
             # 음성 재생
             st.audio(audio.tobytes())
