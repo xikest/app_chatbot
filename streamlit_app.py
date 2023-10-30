@@ -132,11 +132,13 @@ def main():
     with col1:
         st.subheader("질문")
 
+        audio_rec = audiorecorder("click to record", "recording...")
+
         # 음성 녹음 아이콘
         if uploaded_file:
             audio = uploaded_file
-        else:
-            audio = audiorecorder("click to record", "recording...")
+        elif audio_rec:
+            audio = audio_rec
 
 
         if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
