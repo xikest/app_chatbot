@@ -82,9 +82,9 @@ def main():
     with st.expander("What is this APP", expanded=True):
         st.write(
             """     
-            - STT(Speech-To-Text): OpenAI의 Whisper AI 
-            - TTS(Text-To-Speech): Google Translate TTS
-            - Engine: OpenAI GPT 
+            - STT(Speech-To-Text): OpenAI - Whisper AI 
+            - TTS(Text-To-Speech): Google - Translate TTS
+            - Engine: OpenAI - GPT 
             """
         )
 
