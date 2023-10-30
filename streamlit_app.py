@@ -113,6 +113,9 @@ def main():
 
         st.markdown("---")
 
+        mode = st.radio(label="Mode", options=["질문하기", "번역하기"])
+
+        st.markdown("---")
         # 리셋 버튼 생성
         if st.button(label="초기화"):
             # 리셋 코드
@@ -133,6 +136,8 @@ def main():
 
             # 음원 파일에서 텍스트 추출
             question = STT(audio)
+            if mode == "번역하기":
+                question.extend("\n Please translate it into Korean")
 
             # 채팅을 시각화하기 위해 질문 내용 저장
             now = datetime.now().strftime("%H:%M")
