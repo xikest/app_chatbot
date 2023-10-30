@@ -28,11 +28,8 @@ def speech2text_loc(audio):
     # 파일 저장
     filename = audio.name
 
-    # 음원 파일 열기
-    audio_file = open(filename, "rb")
     # Whisper 모델을 활용해 텍스트 얻기
-    transcript = openai.Audio.transcribe("whisper-1", audio_file)
-    audio_file.close()
+    transcript = openai.Audio.transcribe("whisper-1", audio)
     # 파일 삭제
     os.remove(filename)
     return transcript["text"]
