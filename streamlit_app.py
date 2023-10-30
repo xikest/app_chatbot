@@ -142,7 +142,7 @@ def main():
                     st.write("")
 
             # gTTS 를 활용하여 음성 파일 생성 및 재생
-            text2speech(response)
+            # text2speech(response)
 
 
 if __name__ == "__main__":
