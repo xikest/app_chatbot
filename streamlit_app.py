@@ -139,8 +139,8 @@ def main():
                         unsafe_allow_html=True)
                     st.write("")
 
-            # speak
-            # text2speech(response)
+            if not mode == "Translate":
+                text2speech(response)
 
 
 if __name__ == "__main__":
