@@ -24,16 +24,6 @@ def speech2text(audio):
     os.remove(filename)
     return transcript["text"]
 
-def speech2text_loc(audio):
-    # 파일 저장
-    filename = audio.name
-
-    # Whisper 모델을 활용해 텍스트 얻기
-    transcript = openai.Audio.transcribe("whisper-1", audio)
-    # 파일 삭제
-    os.remove(filename)
-    return transcript["text"]
-
 
 def ask_gpt(prompt, model):
     response = openai.ChatCompletion.create(model=model,
@@ -110,16 +100,16 @@ def main():
 
         audio = audiorecorder("Click to record", "Recording...")
 
-        uploaded_file = st.file_uploader("Upload an audio file", type=['mp3', 'wav'])
-        if uploaded_file is not None:
-            st.success(f"File '{uploaded_file.name}' uploaded successfully.")
-            audio_uploaded = uploaded_file
+        # uploaded_file = st.file_uploader("Upload an audio file", type=['mp3', 'wav'])
+        # if uploaded_file is not None:
+            # st.success(f"File '{uploaded_file.name}' uploaded successfully.")
+            # audio_uploaded = uploaded_file
 
         if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
-            if audio_uploaded:
-                question = speech2text_loc(audio_uploaded)
-            else:
-                question = speech2text(audio)
+            # if audio_uploaded:
+                # question = speech2text_loc(audio_uploaded)
+            # else:
+            question = speech2text(audio)
 
             now = datetime.now().strftime("%H:%M")
             st.session_state["chat"] = st.session_state["chat"] + [("user", now, question)]
@@ -127,7 +117,7 @@ def main():
                 question = question + "\n Please translate it into Korean"
             st.session_state["messages"] = st.session_state["messages"] + [{"role": "user", "content": question}]
             st.session_state["check_audio"] = audio
-            st.session_state["check_audio_uploaded"] = audio_uploaded
+            # st.session_state["check_audio_uploaded"] = audio_uploaded
             flag_start = True
 
     with col2:
