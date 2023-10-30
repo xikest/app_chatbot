@@ -117,12 +117,16 @@ def main():
 
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader("질문하기")
+        st.subheader("질문")
+
+        audio = audiorecorder("click to record", "recording...")
         # 음성 녹음 아이콘
         if audio_local:
             audio = audio_local
-        else:
-            audio = audiorecorder("click to record", "recording...")
+        elif audio:
+            audio = audio
+
+
         if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
             # 음성 재생
             st.audio(audio.tobytes())
@@ -142,7 +146,7 @@ def main():
 
     with col2:
 
-        st.subheader("질문/답변")
+        st.subheader("답변")
         if flag_start:
             response = ask_gpt(st.session_state["messages"], model)
 
