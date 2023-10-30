@@ -105,6 +105,7 @@ def main():
         uploaded_file = st.file_uploader("파일을 업로드하세요", type='csv')
         if uploaded_file is not None:
             audio_local = open("output.mp3", "rb")
+            st.write(audio_local)
 
         st.markdown("---")
 
