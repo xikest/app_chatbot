@@ -92,6 +92,8 @@ def main():
 
         st.markdown("")
 
+
+
     # 사이드바 생성
     with st.sidebar:
         openai.api_key = st.text_input(label="OPENAI API Key", placeholder="Enter Your API Key", type="password")
@@ -102,17 +104,20 @@ def main():
     with col1:
         st.subheader("Question")
 
-        if uploaded_audio:
-            question = speech2text(uploaded_audio.read())
+        audio = audiorecorder("Click to record", "Recording...")
+
+        if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
+            question = speech2text(audio)
             now = datetime.now().strftime("%H:%M")
             st.session_state["chat"] = st.session_state["chat"] + [("user", now, question)]
             if mode == "Translate":
                 question = question + "\n Please translate it into Korean"
             st.session_state["messages"] = st.session_state["messages"] + [{"role": "user", "content": question}]
-            st.session_state["check_audio_uploaded"] = uploaded_audio
+            st.session_state["check_audio"] = audio
             flag_start = True
 
     with col2:
+
         st.subheader("답변")
         if flag_start:
             response = ask_gpt(st.session_state["messages"], model)
@@ -138,6 +143,7 @@ def main():
 
             # gTTS 를 활용하여 음성 파일 생성 및 재생
             text2speech(response)
+
 
 if __name__ == "__main__":
     main()
