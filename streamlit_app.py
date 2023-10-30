@@ -71,6 +71,10 @@ def main():
 
     if "check_audio_uploaded" not in st.session_state:
         st.session_state["check_audio_uploaded"] = []
+
+    # 음성 파일 업로드
+    uploaded_audio = st.file_uploader("Upload an audio file (MP3 or WAV)", type=["mp3", "wav"])
+
     # 제목
     st.header("Your Voice App")
     # 구분선
@@ -98,30 +102,17 @@ def main():
     with col1:
         st.subheader("Question")
 
-        audio = audiorecorder("Click to record", "Recording...")
-
-        # uploaded_file = st.file_uploader("Upload an audio file", type=['mp3', 'wav'])
-        # if uploaded_file is not None:
-            # st.success(f"File '{uploaded_file.name}' uploaded successfully.")
-            # audio_uploaded = uploaded_file
-
-        if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
-            # if audio_uploaded:
-                # question = speech2text_loc(audio_uploaded)
-            # else:
-            question = speech2text(audio)
-
+        if uploaded_audio:
+            question = speech2text(uploaded_audio.read())
             now = datetime.now().strftime("%H:%M")
             st.session_state["chat"] = st.session_state["chat"] + [("user", now, question)]
             if mode == "Translate":
                 question = question + "\n Please translate it into Korean"
             st.session_state["messages"] = st.session_state["messages"] + [{"role": "user", "content": question}]
-            st.session_state["check_audio"] = audio
-            # st.session_state["check_audio_uploaded"] = audio_uploaded
+            st.session_state["check_audio_uploaded"] = uploaded_audio
             flag_start = True
 
     with col2:
-
         st.subheader("답변")
         if flag_start:
             response = ask_gpt(st.session_state["messages"], model)
@@ -147,7 +138,6 @@ def main():
 
             # gTTS 를 활용하여 음성 파일 생성 및 재생
             text2speech(response)
-
 
 if __name__ == "__main__":
     main()
