@@ -51,7 +51,7 @@ def text2speech(response):
 def main():
     # 기본 설정
     st.set_page_config(
-        page_title="Your Voice",
+        page_title="Voice man",
         layout="wide")
 
     flag_start = False
@@ -79,7 +79,7 @@ def main():
     st.markdown("---")
 
     # basic descr
-    with st.expander("What is this APP", expanded=True):
+    with st.expander("APP environment description", expanded=True):
         st.write(
             """     
             - STT(Speech-To-Text): OpenAI - Whisper AI 
