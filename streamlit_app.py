@@ -145,10 +145,11 @@ def main():
             # 음성 재생
 
             if audio_uploaded:
-                st.audio(audio_uploaded.tobytes())
+                # audio_file = open(audio_uploaded, "rb")
                 question = speech2text(audio_uploaded)
+
             else:
-                st.audio(audio.tobytes())
+                # st.audio(audio.tobytes())
                 # 음원 파일에서 텍스트 추출
                 question = speech2text(audio)
 
