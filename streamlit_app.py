@@ -69,11 +69,11 @@ def main():
     if "check_audio" not in st.session_state:
         st.session_state["check_audio"] = []
 
-    if "check_audio_uploaded" not in st.session_state:
-        st.session_state["check_audio_uploaded"] = []
+    # if "check_audio_uploaded" not in st.session_state:
+    #     st.session_state["check_audio_uploaded"] = []
 
     # 음성 파일 업로드
-    uploaded_audio = st.file_uploader("Upload an audio file (MP3 or WAV)", type=["mp3", "wav"])
+    # uploaded_audio = st.file_uploader("Upload an audio file (MP3 or WAV)", type=["mp3", "wav"])
 
     # 제목
     st.header("Your Voice App")
@@ -97,7 +97,7 @@ def main():
     # 사이드바 생성
     with st.sidebar:
         openai.api_key = st.text_input(label="OPENAI API Key", placeholder="Enter Your API Key", type="password")
-        model = st.radio(label="GPT Model", options=["gpt-4", "gpt-3.5-turbo"])
+        model = st.radio(label="GPT Model", options=["gpt-3.5-turbo", "gpt-4"])
         mode = st.radio(label="Mode", options=["Ask a Question", "Translate"])
 
     col1, col2 = st.columns(2)
