@@ -73,7 +73,7 @@ def main():
     if "check_reset" not in st.session_state:
         st.session_state["check_reset"] = False
 
-    # 제목 
+    # 제목
     st.header("음성 비서 프로그램")
     # 구분선
     st.markdown("---")
@@ -102,22 +102,16 @@ def main():
 
         # GPT 모델을 선택하기 위한 라디오 버튼 생성
         model = st.radio(label="GPT 모델", options=["gpt-4", "gpt-3.5-turbo"])
-        st.markdown("---")
 
-        translation = st.radio(label="mode", options=["질문하기", "번역기"])
         st.markdown("---")
 
         # 리셋 버튼 생성
         if st.button(label="초기화"):
-            # 리셋 코드 
+            # 리셋 코드
             st.session_state["chat"] = []
             st.session_state["messages"] = [{"role": "system",
                                              "content": "You are a thoughtful assistant. Respond to all input in 25 words and answer in korea"}]
             st.session_state["check_reset"] = True
-
-
-
-
 
     # 기능 구현 공간
     col1, col2 = st.columns(2)
@@ -127,13 +121,10 @@ def main():
         # 음성 녹음 아이콘 추가
         audio = audiorecorder("클릭하여 녹음하기", "녹음중...")
         if (audio.duration_seconds > 0) and (st.session_state["check_reset"] == False):
-            # 음성 재생 
+            # 음성 재생
             st.audio(audio.export().read())
             # 음원 파일에서 텍스트 추출
             question = STT(audio)
-
-            if translation == "번역기":
-                question = question.extend("\n Please translate it into Korean")
 
             # 채팅을 시각화하기 위해 질문 내용 저장
             now = datetime.now().strftime("%H:%M")
