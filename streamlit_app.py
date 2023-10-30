@@ -100,82 +100,34 @@ def main():
 
     # 사이드바 생성
     with st.sidebar:
-
-        # Open AI API 키 입력받기
-        openai.api_key = st.text_input(label="OPENAI API Key", placeholder="Enter Your API Key", value="",
-                                       type="password")
-
-        st.markdown("---")
-
-        # GPT 모델을 선택하기 위한 라디오 버튼 생성
-        model = st.radio(label="GPT 모델", options=["gpt-4", "gpt-3.5-turbo"])
-
-        st.markdown("---")
-
-        mode = st.radio(label="Mode", options=["질문하기", "번역하기"])
-
-        st.markdown("---")
-
-        # uploaded_file = st.file_uploader("파일을 업로드하세요", type='mp3')
-        # if uploaded_file is not None:
-        #     audio_local = open(uploaded_file, "rb")
-        # # 업로드된 파일을 가져옴
-
-        st.markdown("---")
-
-        # 리셋 버튼 생성
-        if st.button(label="초기화"):
-            # 리셋 코드
-            st.session_state["chat"] = []
-            st.session_state["messages"] = [{"role": "system",
-                                             "content": "You are a thoughtful assistant. Respond to all input in 25 words and answer in korea"}]
+        openai.api_key = st.text_input(label="OPENAI API Key", placeholder="Enter Your API Key", type="password")
+        model = st.radio(label="GPT Model", options=["gpt-4", "gpt-3.5-turbo"])
+        mode = st.radio(label="Mode", options=["Ask a Question", "Translate"])
 
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader("질문")
+        st.subheader("Question")
 
-        audio = audiorecorder("click to record", "recording...")
+        audio = audiorecorder("Click to record", "Recording...")
 
-        uploaded_file = st.file_uploader("파일을 업로드하세요", type=['mp3', 'wav'])
+        uploaded_file = st.file_uploader("Upload an audio file", type=['mp3', 'wav'])
         if uploaded_file is not None:
-            # 파일 유효성 검사
-            # if uploaded_file.type not in ['audio/mp3', 'audio/wav']:
-            #     st.error("올바른 오디오 파일 형식이 아닙니다. MP3 또는 WAV 파일을 업로드하세요.")
-            # elif uploaded_file.size > 10 * 1024 * 1024:  # 예: 10MB 제한
-            #     st.error("파일 크기가 너무 큽니다. 10MB 미만의 파일을 업로드하세요.")
-            # else:
-            #     # 업로드한 파일을 사용할 수 있음
-            #     # 여기서 추가 작업 수행 가능
-            st.success(f"파일 '{uploaded_file.name}'을 성공적으로 업로드했습니다.")
+            st.success(f"File '{uploaded_file.name}' uploaded successfully.")
             audio_uploaded = uploaded_file
 
-
-        # 음성 녹음 아이콘
-
-
         if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
-            # 음성 재생
-
             if audio_uploaded:
-                # audio_file = open(audio_uploaded, "rb")
                 question = speech2text_loc(audio_uploaded)
-
             else:
-                # st.audio(audio.tobytes())
-                # 음원 파일에서 텍스트 추출
                 question = speech2text(audio)
 
-            # 채팅을 시각화하기 위해 질문 내용 저장
             now = datetime.now().strftime("%H:%M")
             st.session_state["chat"] = st.session_state["chat"] + [("user", now, question)]
-            # GPT 모델에 넣을 프롬프트를 위해 질문 내용 저장
-            if mode == "번역하기":
-                question =  question +  "\n Please translate it into Korean"
+            if mode == "Translate":
+                question = question + "\n Please translate it into Korean"
             st.session_state["messages"] = st.session_state["messages"] + [{"role": "user", "content": question}]
-            # audio 버퍼 확인을 위해 현 시점 오디오 정보 저장
             st.session_state["check_audio"] = audio
             st.session_state["check_audio_uploaded"] = audio_uploaded
-
             flag_start = True
 
     with col2:
