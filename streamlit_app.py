@@ -3,7 +3,49 @@ from audiorecorder import audiorecorder
 import openai
 from datetime import datetime
 import numpy as np
-from function import speech2text, text2speech, ask_gpt
+import os
+from gtts import gTTS
+import base64
+
+
+def speech2text(audio):
+    # 파일 저장
+    filename = 'input.mp3'
+    wav_file = open(filename, "wb")
+    wav_file.write(audio.tobytes())
+    wav_file.close()
+
+    # 음원 파일 열기
+    audio_file = open(filename, "rb")
+    # Whisper 모델을 활용해 텍스트 얻기
+    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    audio_file.close()
+    # 파일 삭제
+    os.remove(filename)
+    return transcript["text"]
+def ask_gpt(prompt, model):
+    response = openai.ChatCompletion.create(model=model,
+                                            messages=prompt)
+    system_message = response["choices"][0]["message"]
+    return system_message["content"]
+def text2speech(response):
+    # gTTS 를 활용하여 음성 파일 생성
+    filename = "output.mp3"
+    tts = gTTS(text=response, lang="ko")
+    tts.save(filename)
+
+    # 음원 파일 자동 재성
+    with open(filename, "rb") as f:
+        data = f.read()
+        b64 = base64.b64encode(data).decode()
+        md = f"""
+            <audio autoplay="True">
+            <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+            </audio>
+            """
+        st.markdown(md, unsafe_allow_html=True, )
+    # 파일 삭제
+    os.remove(filename)
 
 ##### 메인 함수 #####
 def main():
@@ -66,12 +108,12 @@ def main():
             st.session_state["messages"] = [{"role": "system",
                                              "content": "You are a thoughtful assistant. Respond to all input in 25 words and answer in korea"}]
 
-    # 기능 구현 공간
     col1, col2 = st.columns(2)
     with col1:
-        # 왼쪽 영역 작성
         st.subheader("질문하기")
-        # 음성 녹음 아이콘 추가
+        # 음성 녹음 아이콘
+        # if 오디오 파일을 불러온다면
+        # audio = open("output.mp3", "rb")
         audio = audiorecorder("click to record", "recording...")
         if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
             # 음성 재생
@@ -91,13 +133,11 @@ def main():
             flag_start = True
 
     with col2:
-        # 오른쪽 영역 작성
+
         st.subheader("질문/답변")
         if flag_start:
-            # ChatGPT에게 답변 얻기
             response = ask_gpt(st.session_state["messages"], model)
 
-            # GPT 모델에 넣을 프롬프트를 위해 답변 내용 저장
             st.session_state["messages"] = st.session_state["messages"] + [{"role": "system", "content": response}]
 
             # 채팅 시각화를 위한 답변 내용 저장
