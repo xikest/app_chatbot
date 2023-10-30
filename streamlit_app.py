@@ -122,19 +122,19 @@ def main():
 
         audio = audiorecorder("click to record", "recording...")
 
-        uploaded_file = st.file_uploader("파일을 업로드하세요", type=['mp3', 'wav'])
+        audio = st.file_uploader("파일을 업로드하세요", type=['mp3', 'wav'])
 
-        if uploaded_file is not None:
-            # 파일 유효성 검사
-            # if uploaded_file.type not in ['audio/mp3', 'audio/wav']:
-            #     st.error("올바른 오디오 파일 형식이 아닙니다. MP3 또는 WAV 파일을 업로드하세요.")
-            # elif uploaded_file.size > 10 * 1024 * 1024:  # 예: 10MB 제한
-            #     st.error("파일 크기가 너무 큽니다. 10MB 미만의 파일을 업로드하세요.")
-            # else:
-            #     # 업로드한 파일을 사용할 수 있음
-            #     # 여기서 추가 작업 수행 가능
-            st.success(f"파일 '{uploaded_file.name}'을 성공적으로 업로드했습니다.")
-            audio = uploaded_file
+        # if uploaded_file is not None:
+        #     # 파일 유효성 검사
+        #     # if uploaded_file.type not in ['audio/mp3', 'audio/wav']:
+        #     #     st.error("올바른 오디오 파일 형식이 아닙니다. MP3 또는 WAV 파일을 업로드하세요.")
+        #     # elif uploaded_file.size > 10 * 1024 * 1024:  # 예: 10MB 제한
+        #     #     st.error("파일 크기가 너무 큽니다. 10MB 미만의 파일을 업로드하세요.")
+        #     # else:
+        #     #     # 업로드한 파일을 사용할 수 있음
+        #     #     # 여기서 추가 작업 수행 가능
+        #     st.success(f"파일 '{uploaded_file.name}'을 성공적으로 업로드했습니다.")
+        #     audio = uploaded_file
 
 
         # 음성 녹음 아이콘
