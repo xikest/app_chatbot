@@ -105,6 +105,7 @@ def main():
         audio = audiorecorder("Click to record", "Recording...")
 
         if len(audio) > 0 and not np.array_equal(audio, st.session_state["check_audio"]):
+            st.audio(audio.tobytes())
             question = speech2text(audio)
             now = datetime.now().strftime("%H:%M")
             st.session_state["chat"] = st.session_state["chat"] + [("user", now, question)]
