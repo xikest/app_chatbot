@@ -95,7 +95,7 @@ def main():
     # side bar
     with st.sidebar:
         openai.api_key = st.text_input(label="OPENAI API Key", placeholder="Enter Your API Key", type="password")
-        model = st.radio(label="GPT Model", options=["gpt-3.5-turbo", "gpt-4"])
+        model = st.radio(label="GPT Model", options=["gpt-4", "gpt-3.5-turbo"])
         mode = st.radio(label="Mode", options=["Translate", "Ask a Question"])
 
     col1, col2 = st.columns(2)
