@@ -137,7 +137,7 @@ def main():
             # 음원 파일에서 텍스트 추출
             question = STT(audio)
             if mode == "번역하기":
-                question.extend("\n Please translate it into Korean")
+                question =  question+"\n Please translate it into Korean"
 
             # 채팅을 시각화하기 위해 질문 내용 저장
             now = datetime.now().strftime("%H:%M")
