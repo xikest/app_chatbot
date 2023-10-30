@@ -55,7 +55,7 @@ def main():
         layout="wide")
 
     flag_start = False
-    query_trx = "\n Please translate it into Korean"
+    query_trx = "translate the following text into Korean \n"
     # session state initialize
     if "chat" not in st.session_state:
         st.session_state["chat"] = []
@@ -110,7 +110,7 @@ def main():
             now = datetime.now().strftime("%H:%M")
             st.session_state["chat"] = st.session_state["chat"] + [("user", now, question)]
             if mode == "Translate":
-                question += query_trx
+                question = query_trx + question
             st.session_state["messages"] = st.session_state["messages"] + [{"role": "user", "content": question}]
             st.session_state["check_audio"] = audio
             flag_start = True
@@ -120,7 +120,6 @@ def main():
         st.subheader("Answer")
         if flag_start:
             response = ask_gpt(st.session_state["messages"], model)
-            response -= query_trx
             st.session_state["messages"] = st.session_state["messages"] + [{"role": "system", "content": response}]
 
             # ready to chat
