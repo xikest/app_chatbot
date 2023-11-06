@@ -3,4 +3,5 @@ telegram_bot_token = YOUR_KEY
 openai_api_key = YOUR_KEY
 
 2. 실행
+python3 -u app_chatbot.py
 nohup python3 -u app_chatbot.py > app_chatbot.log 2>&1 
