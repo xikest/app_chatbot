@@ -34,20 +34,20 @@ class BotManager:
     async def chatgpt(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Echo the user message."""
         user_message = update.message.text
-        try:
-            if self.bot_log:
-                self.log_manager = LogManager()
-                self.log_manager.load_log(self.bot_log)
+        # try:
+        if self.bot_log:
+            self.log_manager = LogManager()
+            self.log_manager.load_log(self.bot_log)
 
-            self.log_manager.add_message("user", user_message)
-            prompt = self.log_manager.messages_prompt
-            print(f"user: {prompt[-1].get('content')}")
-            bot_response = self.aim.get_text_from_gpt(prompt)
-            print(f"bot: {bot_response}")
-            self.log_manager.add_message("assistant", bot_response)
-            self.log_manager.save_log(self.bot_log)
-        except Exception as e:
-            bot_response = user_message
+        self.log_manager.add_message("user", user_message)
+        prompt = self.log_manager.messages_prompt
+        print(f"user: {prompt[-1].get('content')}")
+        bot_response = self.aim.get_text_from_gpt(prompt)
+        print(f"bot: {bot_response}")
+        self.log_manager.add_message("assistant", bot_response)
+        self.log_manager.save_log(self.bot_log)
+        # except Exception as e:
+        #     bot_response = user_message
         await update.message.reply_text(bot_response)
 
     async def img_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
