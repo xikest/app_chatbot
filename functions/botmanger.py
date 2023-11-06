@@ -25,6 +25,7 @@ class BotManager:
 
     def add_handlers(self):
         self.app.add_handler(CommandHandler("new", self.newbot_command))
+        self.app.add_handler(CommandHandler("img", self.img_command))
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.chatgpt))
 
     async def chatgpt(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -44,10 +45,15 @@ class BotManager:
         self.log_manager.save_log(self.logfile)
         await update.message.reply_text(bot_response)
 
+    async def img_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        user_message = update.message.text
+        aim = AIManager(self.api_key)
+        bot_response = aim.getImageURLFromDALLE(user_message)
+        await update.message.reply_photo(bot_response)
+
     async def newbot_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_id = update.message.chat_id
         self.logfile = await self.newbot(user_id)
-        # print(f"new:{self.logfile}")
 
     async def newbot(self, user_id) -> str:
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
