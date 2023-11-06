@@ -1,19 +1,14 @@
 from fastapi import Request, FastAPI
-import openai
-import asyncio
-import time
-import queue as q
-import os
-from function_chat import mainChat
+from function_bot import chatBot
 
 app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "kakaoTest"}
+    return {"message": "TelegramChatbot"}
 
 @app.post("/chat/")
 async def chat(request: Request):
-    kakaorequest = await request.json()
-    return mainChat(kakaorequest)
-
+    telegramrequest = await request.json()
+    await chatBot(telegramrequest)
+    return {"message": "TelegramChatbot/chat"}
