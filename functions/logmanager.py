@@ -1,4 +1,5 @@
 import os
+import pickle
 
 class LogManager:
     def __init__(self):
@@ -9,22 +10,21 @@ class LogManager:
     def add_message(self, role, content):
         self.messages_prompt.append({"role": role, "content": content})
 
+
+
     def save_log(self, log_file):
+        log_file = log_file+".pkl"
         log_path = os.path.join(self.log_dir, log_file)
-        with open(log_path, "w") as file:
-            for message in self.messages_prompt:
-                file.write(f"{message['role']}: {message['content']}\n")
+        with open(log_path, "wb") as file:
+            pickle.dump(self.messages_prompt, file)
+
 
     def load_log(self, log_file):
         log_path = os.path.join(self.log_dir, log_file)
         try:
+            with open(log_path, "rb") as file:
+                self.messages_prompt = pickle.load(file)
+        except (FileNotFoundError, EOFError):
             self.messages_prompt = []
-            with open(log_path, "r") as file:
-                for line in file:
-                    parts = line.strip().split(": ")
-                    if len(parts) == 2:
-                        role, content = parts
-                        self.add_message(role, content)
-        except FileNotFoundError:
-            self.add_message("assistant", "You are a thoughtful assistant. Respond to all input in 20 words and answer in korea")
+            self.add_message("assistant", "You are a thoughtful assistant, and you understand all inputs in English. Respond to all input in 20 words and answer in korea")
             self.save_log(log_file)

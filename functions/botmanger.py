@@ -13,9 +13,12 @@ logger = logging.getLogger(__name__)
 class BotManager:
 
     def __init__(self, token, api_key):
+        print(f"token: {token}")
+        print(f"api_key: {api_key}")
         self.token = token
         self.api_key = api_key
         self.app = Application.builder().token(self.token).build()
+        self.aim = AIManager(self.api_key)
         self.log_manager = None
         self.logfile:str = ""
 
@@ -35,12 +38,12 @@ class BotManager:
         if not self.log_manager:
             self.logfile = await self.newbot(user_id)
             self.log_manager = LogManager()
-        self.log_manager.load_log(self.logfile)
+            self.log_manager.load_log(self.logfile)
         self.log_manager.add_message("user", user_message)
         prompt = self.log_manager.messages_prompt
-        aim = AIManager(self.api_key)
-        bot_response = aim.get_text_from_gpt(prompt)
-        # print(f"bot_response, {bot_response}")
+        print(f"user: {prompt[-1].get('content')}")
+        bot_response = self.aim.get_text_from_gpt(prompt)
+        print(f"bot: {bot_response}")
         self.log_manager.add_message("assistant", bot_response)
         self.log_manager.save_log(self.logfile)
         await update.message.reply_text(bot_response)
@@ -57,4 +60,4 @@ class BotManager:
 
     async def newbot(self, user_id) -> str:
         current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-        return f"conversation_{user_id}_{current_time}.log"
+        return f"log_{user_id}_{current_time}"
