@@ -1,0 +1,6 @@
+1. 환경 변수에 api key 등록
+telegram_bot_token = YOUR_KEY
+openai_api_key = YOUR_KEY
+
+2. 실행
+nohup python3 -u app_chatbot.py > app_chatbot.log 2>&1 
