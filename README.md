@@ -15,9 +15,9 @@ To get started with this project, follow these steps:
 git clone https://github.com/your-username/ai-chatbot-image-generator.git
 ```
 #### 2. Install the required dependencies. You can use `pip` to install the necessary libraries:
-  ```bash
-  pip install -r requirements.txt
-  ```
+```bash
+pip install -r requirements.txt
+```
 #### 3. Obtain API keys:
    - Create an OpenAI API key from the OpenAI platform.
    - Create a Telegram bot and obtain the API token from the BotFather on Telegram.
