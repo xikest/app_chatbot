@@ -10,27 +10,27 @@ It is designed to respond to text input from users and generate text-based respo
 
 ## Getting Started
 To get started with this project, follow these steps:
-1. Clone the repository to your local machine:
-   ```bash
-   git clone https://github.com/your-username/ai-chatbot-image-generator.git
-   ```
-2. Install the required dependencies. You can use `pip` to install the necessary libraries:
+#### 1. Clone the repository to your local machine:
+```bash
+git clone https://github.com/your-username/ai-chatbot-image-generator.git
+```
+#### 2. Install the required dependencies. You can use `pip` to install the necessary libraries:
   ```bash
   pip install -r requirements.txt
   ```
-3. Obtain API keys:
+#### 3. Obtain API keys:
    - Create an OpenAI API key from the OpenAI platform.
    - Create a Telegram bot and obtain the API token from the BotFather on Telegram.
-4. Set environment variables for your API keys. You can export them as follows:
+#### 4. Set environment variables for your API keys. You can export them as follows:
   ```bash
   export TELEGRAM_BOT_TOKEN="your-telegram-bot-token"
   export OPENAI_API_KEY="your-openai-api-key"
   ```
-5. Run the application:
+#### 5. Run the application:
   ```bash
   python app_chatbot.py
   ```
-6. You can interact with the AI chatbot on Telegram by sending messages to your bot.
+#### 6. You can interact with the AI chatbot on Telegram by sending messages to your bot.
 
 ## Usage
   - To start a new conversation with the chatbot, send the `/new` command to the bot. It will create a new conversation log for you.
