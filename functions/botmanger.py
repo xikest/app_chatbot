@@ -60,13 +60,13 @@ class BotManager:
             await self.newbot(user_id)
 
             error_message = str(tr_e)
-            with open("error_t.txt", "w") as error_file:
+            with open("err/error_t.txt", "w") as error_file:
                 error_file.write(error_message)
             pass
 
         except Exception as e:
             error_message = str(e)
-            with open("error.txt", "w") as error_file:
+            with open("err/error.txt", "w") as error_file:
                 error_file.write(error_message)
 
         await update.message.reply_text(bot_response)
