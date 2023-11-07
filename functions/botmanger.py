@@ -48,7 +48,7 @@ class BotManager:
                 bot_response = self.aim.get_text_from_gpt(prompt)
                 end_time = time.time()  # 함수 종료 시간 기록
                 execution_time = end_time - start_time  # 실행 시간 계산
-                bot_response = f"{bot_response}|({round(execution_time,2)}s)"
+                bot_response = f"{bot_response}|({round(execution_time,1)}s)"
                 print(f"bot: {bot_response}")
                 self.log_manager.add_message("assistant", bot_response)
                 self.log_manager.save_log(self.bot_log)
