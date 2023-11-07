@@ -53,8 +53,8 @@ class BotManager:
                 self.log_manager.add_message("assistant", bot_response)
                 self.log_manager.save_log(self.bot_log)
             else:
-                bot_answer = user_message
-            await update.message.reply_text(bot_answer)
+                bot_response = user_message
+            await update.message.reply_text(bot_response)
 
         except Exception as e:
             user_id = update.message.chat_id
