@@ -6,7 +6,6 @@ openai_api_key = YOUR_KEY
 pip install -r requirements.txt
 
 3. 실행
-python3 -u app_chatbot.py
 nohup python3 -u app_chatbot.py > app_chatbot.log 2>&1 
 
 #실행 중인 쉘 확인 아래는 app_chatbot 키워드
