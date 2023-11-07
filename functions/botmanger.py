@@ -67,11 +67,12 @@ class BotManager:
             pass
 
     async def img_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        await asyncio.sleep(1)
+        user_message = update.message.text
         user_message = update.message.text
         bot_response = self.aim.getImageURLFromDALLE(user_message)
+        await update.message.reply_text(f"[{user_message}]에 대해 그려봤습니다.")
         await update.message.reply_photo(bot_response)
-        await asyncio.sleep(1)
+
 
     async def newbot_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_id = update.message.chat_id
