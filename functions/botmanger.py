@@ -19,7 +19,7 @@ class BotManager:
         self.token = token
         self.api_key = api_key
         self.app = Application.builder().token(self.token).build()
-        self.aim = AIManager(self.api_key)
+        self.aim = None
         self.log_manager = None
         self.bot_log = None
 
@@ -60,6 +60,7 @@ class BotManager:
             await self.handle_error(e, type='time out', update=update)
 
             user_id = update.message.chat_id
+
             await self.newbot(user_id)
             pass
 
@@ -83,6 +84,7 @@ class BotManager:
         self.bot_log =  f"log_{user_id}_{current_time}"
         self.log_manager = LogManager()
         self.log_manager.load_log(self.bot_log)
+        self.aim = AIManager(self.api_key)
         return None
 
     async def handle_error(self, error, type, update) -> None:

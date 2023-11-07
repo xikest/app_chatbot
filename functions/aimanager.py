@@ -9,7 +9,7 @@ class AIManager:
         self.messages_prompt.append({"role": role, "content": content})
 
     def get_text_from_gpt(self, prompt):
-        response = self.client.chat.completions.create(model="gpt-3.5-turbo", messages=prompt, timeout=30)
+        response = self.client.chat.completions.create(model="gpt-3.5-turbo", messages=prompt, timeout=60)
         answer = response.choices[0].message.content
         return answer
     def getImageURLFromDALLE(self, user_input):
