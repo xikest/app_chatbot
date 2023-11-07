@@ -71,6 +71,7 @@ class BotManager:
         user_message = user_message.replace("/img", "")
 
         bot_response = self.aim.getImageURLFromDALLE(user_message)
+        await update.message.reply_text(f"[{user_message}]에 대해 그려봤습니다.")
         await update.message.reply_photo(bot_response)
 
 
