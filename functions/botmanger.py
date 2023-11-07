@@ -1,5 +1,5 @@
 import logging
-import asyncio
+import time
 from datetime import datetime
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
@@ -48,23 +48,26 @@ class BotManager:
             prompt = [prompt_first] + prompt_recent
             print(f"prompt: {prompt}")
             print(f"user: {prompt[-1].get('content')}")
+
+            start_time = time.time()  # 함수 시작 시간 기록
             bot_response = self.aim.get_text_from_gpt(prompt)
+            end_time = time.time()  # 함수 종료 시간 기록
+            execution_time = end_time - start_time  # 실행 시간 계산
+            bot_response = f"{bot_response}|({execution_time}s)"
             print(f"bot: {bot_response}")
             self.log_manager.add_message("assistant", bot_response)
             self.log_manager.save_log(self.bot_log)
 
 
         except TimeoutError as e:
-
-
-            await self.handle_error(e, type='time out')
+            await self.handle_error(e, type='time out', update=update)
 
             user_id = update.message.chat_id
             await self.newbot(user_id)
             pass
 
         except Exception as e:
-            await self.handle_error(e, type='normal')
+            await self.handle_error(e, type='normal', update=update)
 
         await update.message.reply_text(bot_response)
 
