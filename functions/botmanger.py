@@ -68,9 +68,9 @@ class BotManager:
 
     async def img_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_message = update.message.text
-        aim = AIManager(self.api_key)
-        bot_response = aim.getImageURLFromDALLE(user_message)
+        bot_response = self.aim.getImageURLFromDALLE(user_message)
         await update.message.reply_photo(bot_response)
+        await update.message.reply_text("")
 
     async def newbot_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_id = update.message.chat_id
