@@ -9,5 +9,5 @@ pip install -r requirements.txt
 python3 -u app_chatbot.py
 nohup python3 -u app_chatbot.py > app_chatbot.log 2>&1 
 
-#실행 중인 쉘 확인 아래는 bot 키워드
+#실행 중인 쉘 확인 아래는 app_chatbot 키워드
 ps -ef|grep app_chatbot
