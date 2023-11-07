@@ -49,12 +49,13 @@ class BotManager:
                 bot_response = self.aim.get_text_from_gpt(prompt)
                 end_time = time.time()  # 함수 종료 시간 기록
                 execution_time = end_time - start_time  # 실행 시간 계산
-                print(f"bot:{bot_response}|({round(execution_time,1)}s)")
+                bot_answer = f"bot:{bot_response}|({round(execution_time,1)}s)"
+                print(bot_answer)
                 self.log_manager.add_message("assistant", bot_response)
                 self.log_manager.save_log(self.bot_log)
             else:
-                bot_response = user_message
-            await update.message.reply_text(bot_response)
+                bot_answer = user_message
+            await update.message.reply_text(bot_answer)
 
         except Exception as e:
             user_id = update.message.chat_id
