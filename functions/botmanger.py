@@ -61,7 +61,10 @@ class BotManager:
             user_id = update.message.chat_id
             await self.newbot(user_id)
             await self.handle_error(e, type='normal', update=update)
-            await asyncio.sleep(10)
+            sleeptime = 10
+            await update.message.reply_text(f"{sleeptime}초만 기다려 주세요.")
+            await asyncio.sleep(sleeptime)
+            await update.message.reply_text(f"다시 이야기를 이어가죠.")
             pass
 
     async def img_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
