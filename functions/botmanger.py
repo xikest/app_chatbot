@@ -1,18 +1,19 @@
 import logging
 import time
+import asyncio
 from datetime import datetime
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 from functions.aimanager import AIManager
 from functions.logmanager import LogManager
 import os
+
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 class BotManager:
-
     def __init__(self, token, api_key):
         print(f"token: {token}")
         print(f"api_key: {api_key}")
@@ -56,18 +57,12 @@ class BotManager:
                 bot_response = user_message
             await update.message.reply_text(bot_response)
 
-        except TimeoutError as e:
-            await self.handle_error(e, type='time out', update=update)
-
-            user_id = update.message.chat_id
-
-            await self.newbot(user_id)
-            pass
-
         except Exception as e:
+            user_id = update.message.chat_id
+            await self.newbot(user_id)
             await self.handle_error(e, type='normal', update=update)
-
-
+            await asyncio.sleep(10)
+            pass
 
     async def img_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_message = update.message.text
@@ -90,8 +85,8 @@ class BotManager:
     async def handle_error(self, error, type, update) -> None:
         error_message = f"{type} error: {error}"
         print(error_message)
-        os.makedirs("err", exist_ok=True)
-        with open(f"err/{type} error.txt", "w") as error_file:
+        os.makedirs("error", exist_ok=True)
+        with open(f"error/{type} error.txt", "w") as error_file:
             error_file.write(error_message)
         await update.message.reply_text(error_message)
         return None
