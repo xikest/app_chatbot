@@ -49,8 +49,8 @@ class BotManager:
                 bot_response = self.aim.get_text_from_gpt(prompt)
                 end_time = time.time()  # 함수 종료 시간 기록
                 execution_time = end_time - start_time  # 실행 시간 계산
-                bot_answer = f"bot:{bot_response}|({round(execution_time,1)}s)"
-                print(bot_answer)
+                bot_answer = f"{bot_response}|({round(execution_time,1)}s)"
+                print(f"bot: {bot_answer}")
                 self.log_manager.add_message("assistant", bot_response)
                 self.log_manager.save_log(self.bot_log)
             else:
@@ -88,8 +88,9 @@ class BotManager:
     async def handle_error(self, error, type, update) -> None:
         error_message = f"{type} error: {error}"
         print(error_message)
-        os.makedirs("error", exist_ok=True)
-        with open(f"error/{type} error.txt", "w") as error_file:
+        dir_err = "error"
+        os.makedirs(dir_err, exist_ok=True)
+        with open(f"{dir_err}/{type}_error.txt", "w") as error_file:
             error_file.write(error_message)
         await update.message.reply_text(error_message)
         return None
