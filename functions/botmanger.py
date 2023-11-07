@@ -70,7 +70,7 @@ class BotManager:
         user_message = update.message.text
         bot_response = self.aim.getImageURLFromDALLE(user_message)
         await update.message.reply_photo(bot_response)
-        await update.message.reply_text("")
+        await asyncio.sleep(1)
 
     async def newbot_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_id = update.message.chat_id
