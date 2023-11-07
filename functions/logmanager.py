@@ -26,7 +26,8 @@ class LogManager:
                 self.messages_prompt = pickle.load(file)
         except (FileNotFoundError, EOFError):
             self.messages_prompt = []
-            self.add_message("assistant", "You are a thoughtful assistant, and you understand all inputs in English. Respond to all input in 20 words and answer in korea")
+            self.add_message("assistant", "you understand all inputs in English. Respond with a 20-word answer in Korean.")
             self.save_log(log_file)
 
-
+            # self.add_message("assistant", "You are a thoughtful assistant, and you understand all inputs in English. Respond to all input in 20 words and answer in korea")
+            # self.save_log(log_file)
