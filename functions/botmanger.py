@@ -40,7 +40,7 @@ class BotManager:
         try:
             if self.bot_log:
                 self.log_manager.add_message("user", user_message)
-                prompt_first= self.log_manager.messages_prompt.pop(0)
+                prompt_first= self.log_manager.messages_prompt[0]
                 prompt_recent = self.log_manager.messages_prompt[-5:]  # 최근 5개만
                 prompt = [prompt_first] + prompt_recent
                 # print(f"prompt: {prompt}")
