@@ -1,2 +1,2 @@
-openai==1.0.1
+openai==1.1.1
 python-telegram-bot==20.3
