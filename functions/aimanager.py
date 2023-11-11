@@ -13,7 +13,7 @@ class AIManager:
         answer = response.choices[0].message.content
         return answer
     def getImageURLFromDALLE(self, user_input):
-        response = self.client.images.generate(model="dall-e-3",prompt=user_input,n=1,size="512x512")
+        response = self.client.images.generate(model="dall-e-3", prompt=user_input,n=1, size="1024x1024", quality="standard")
         image_url = response.data[0].url
         return image_url
 
