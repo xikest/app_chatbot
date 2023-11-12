@@ -43,7 +43,7 @@ class BotManager:
                 prompt_first= self.log_manager.messages_prompt[0]
                 prompt_recent = self.log_manager.messages_prompt[1:][-10:]  # 최근 5개만
                 prompt = [prompt_first] + prompt_recent
-                # print(f"prompt: {prompt}")
+                print(f"prompt: {prompt}")
                 print(f"user: {prompt[-1].get('content')}")
                 start_time = time.time()  # 함수 시작 시간 기록
                 bot_response = self.aim.get_text_from_gpt(prompt)
