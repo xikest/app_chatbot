@@ -1,8 +1,8 @@
 from openai import OpenAI
 
 class AIManager:
-    def __init__(self, api_key, gpt_model="gpt-4-1106-preview"):
-         # "gpt-3.5-turbo"
+    def __init__(self, api_key, gpt_model="gpt-3.5-turbo-1106"):
+         # "gpt-3.5-turbo-1106"
         self.client = OpenAI(api_key=api_key)
         self.messages_prompt = []
         self.gpt_model=gpt_model
