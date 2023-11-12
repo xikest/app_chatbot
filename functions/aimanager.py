@@ -1,7 +1,8 @@
 from openai import OpenAI
 
 class AIManager:
-    def __init__(self, api_key, gpt_model="gpt-3.5-turbo-1106"):
+    def __init__(self, api_key, gpt_model="gpt-4-1106-preview"):
+         # "gpt-3.5-turbo"
         self.client = OpenAI(api_key=api_key)
         self.messages_prompt = []
         self.gpt_model=gpt_model
@@ -10,7 +11,6 @@ class AIManager:
         self.messages_prompt.append({"role": role, "content": content})
 
     def get_text_from_gpt(self, prompt):
-        # "gpt-3.5-turbo"
         response = self.client.chat.completions.create(model=self.gpt_model, messages=prompt, timeout=60)
         answer = response.choices[0].message.content
         return answer
