@@ -15,8 +15,6 @@ logger = logging.getLogger(__name__)
 
 class BotManager:
     def __init__(self, token, api_key):
-        # print(f"token: {token}")
-        # print(f"api_key: {api_key}")
         self.token = token
         self.api_key = api_key
         self.app = Application.builder().token(self.token).build()
