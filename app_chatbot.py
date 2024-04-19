@@ -1,10 +1,9 @@
 from functions.botmanger import BotManager
-import os
+from info.sender import Sender
 
 
-BOT_TOKEN = os.environ.get("telegram_bot_token")
-API_KEY = os.environ.get("openai_api_key")
-
+BOT_TOKEN = Sender().bot_token()
+API_KEY = Sender().gpt_key()
 
 
 if __name__ == "__main__":
