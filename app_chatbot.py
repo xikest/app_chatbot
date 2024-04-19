@@ -2,8 +2,8 @@ from functions.botmanger import BotManager
 from info.sender import Sender
 
 
-BOT_TOKEN = Sender().bot_token()
-API_KEY = Sender().gpt_key()
+BOT_TOKEN = Sender().get_token()
+API_KEY = Sender().get_gpt_key()
 
 
 if __name__ == "__main__":
