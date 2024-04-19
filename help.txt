@@ -9,4 +9,10 @@ pip install -r requirements.txt
 nohup python3 -u app_chatbot.py > app_chatbot.log 2>&1 
 
 #실행 중인 쉘 확인 아래는 app_chatbot 키워드
-ps -ef|grep app_chatbot
+ps -ef|grep bot
+
+
+## github 클론
+git clone https://github.com/xikest/app_chatbot.git
+## 클론 삭제
+rm -rf app_chatbot
