@@ -1,33 +1,38 @@
-import os
-import pickle
+from google.cloud import firestore
+from google.oauth2 import service_account
+import logging
 
 class LogManager:
-    def __init__(self):
-        self.messages_prompt = []
-        self.log_dir = os.path.join(os.getcwd(), "logs")
-        os.makedirs(self.log_dir, exist_ok=True)
+    def __init__(self, json_path='web-driver.json'):
+        credentials = service_account.Credentials.from_service_account_file(json_path)
+        logging.info("Credentials loaded successfully.")
+        self.db = firestore.Client(credentials=credentials)
+        pass
+    
+    async def get_previous_chats(self, user_id):
+        chat_ref = self.db.collection("chat_logs").document(str(user_id)).collection("messages")
+        logs = chat_ref.order_by("timestamp").stream()
+        chat_history = []
+        for log in logs:
+            chat_history.append({
+                "role": "user",
+                "content": log.to_dict()["user_message"]})
+            chat_history.append({
+                "role": "assistant",
+                "content": log.to_dict()["bot_response"] })
+        return chat_history
 
-    def add_message(self, role, content):
-        self.messages_prompt.append({"role": role, "content": content})
 
+    async def save_chat_log(self, user_id, user_message, bot_response, timestamp):
+        chat_ref = self.db.collection("chat_logs").document(str(user_id)).collection("messages")
+        chat_ref.add({
+            "user_message": user_message,
+            "bot_response": bot_response,
+            "timestamp": timestamp})
 
-
-    def save_log(self, log_file):
-        log_file = log_file+".pkl"
-        log_path = os.path.join(self.log_dir, log_file)
-        with open(log_path, "wb") as file:
-            pickle.dump(self.messages_prompt, file)
-
-
-    def load_log(self, log_file):
-        log_path = os.path.join(self.log_dir, log_file)
-        try:
-            with open(log_path, "rb") as file:
-                self.messages_prompt = pickle.load(file)
-        except (FileNotFoundError, EOFError):
-            self.messages_prompt = []
-            self.add_message("assistant", "Respond with max a 50-word answer in Korean.")
-            self.save_log(log_file)
-
-            # self.add_message("assistant", "You are a thoughtful assistant, and you understand all inputs in English. Respond to all input in 20 words and answer in korea")
-            # self.save_log(log_file)
+    async def reset_chat_log(self, user_id):
+        chat_ref = self.db.collection("chat_logs").document(str(user_id)).collection("messages")
+        logs = chat_ref.stream()
+        for log in logs:
+            log.reference.delete()
+        logging.info(f"User {user_id}'s chat log has been reset.")

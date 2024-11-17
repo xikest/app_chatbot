@@ -1,11 +1,16 @@
-from functions.botmanger import BotManager
-from info.sender import Sender
+from fastapi import FastAPI, Request
+from functions import BotManager
+import os
 
 
-BOT_TOKEN = Sender().get_token()
-API_KEY = Sender().get_gpt_key()
+app = FastAPI()
 
-
-if __name__ == "__main__":
-    bot_manager = BotManager(BOT_TOKEN, API_KEY)
-    bot_manager.run()
+@app.post("/webhook")
+async def webhook(request: Request):
+    
+    BOT_TOKEN = os.environ.get("CHATBOT_TOKEN")
+    API_KEY = os.environ.get("GPT_API_KEY")
+    bot = BotManager(BOT_TOKEN, API_KEY)
+    data = await request.json()
+    await bot.run(data)
+    return {"status": "ok"}
