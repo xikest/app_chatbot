@@ -1,9 +1,9 @@
 from openai import OpenAI
 
 class AIManager:
-    def __init__(self, api_key, gpt_model='gpt-4o-mini'):
-         # "gpt-3.5-turbo-1106"
-        self.client = OpenAI(api_key=api_key)
+    def __init__(self, api_key, gpt_model='gemini-1.5-flash'):
+        self.client = OpenAI(api_key=api_key,
+                             base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
         self.messages_prompt = []
         self.gpt_model=gpt_model
 

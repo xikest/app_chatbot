@@ -5,6 +5,8 @@ def remove_webhook(token):
     response = requests.get(webhook_url)
     return response.json()
 
+
+
 BOT_TOKEN  = os.environ.get("CHATBOT_TOKEN")
 response = remove_webhook(BOT_TOKEN)
 print(response)
