@@ -97,14 +97,13 @@ class BotManager:
 
         try:
             YT_TYPE = context.user_data.get('YT_TYPE', 'mp3')  # 기본값을 'mp3'로 설정
-            options = None
             file_type = None
             
             if YT_TYPE == 'mp3':
-                options = self.ytd.mp3_options()
+                option = 'mp3'
                 file_type = ".mp3"
             elif YT_TYPE == 'mp4':
-                options = self.ytd.video_options()
+                option = 'video'
                 file_type = ".mp4"
             
 
@@ -115,7 +114,7 @@ class BotManager:
                 return
             await update.message.reply_text(f"Downloading {file_type[1:].upper()} from: {url}")
             
-            file_name = self.ytd.download_video(url, options)
+            file_name = self.ytd.download_video(url, option)
             
             # .webm 파일을 .mp3로 변환
             if file_name:

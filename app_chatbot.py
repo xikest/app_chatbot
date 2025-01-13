@@ -19,6 +19,6 @@ async def webhook(request: Request):
 
 
 
-# if __name__ == "__main__":
-#     uvicorn.run("app_chatbot:app", host="0.0.0.0", port=8888)
+if __name__ == "__main__":
+    uvicorn.run("app_chatbot:app", host="0.0.0.0", port=8888)
     

@@ -1,46 +1,44 @@
-import os
+import requests
+import json
 import yt_dlp
+import logging
 
 FFMPEG_PATH = "/usr/bin/ffmpeg"
+logging.basicConfig(level=logging.INFO)
+
+
+def read_github_json(json_url: str) -> dict:
+    try:
+        response = requests.get(json_url)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"HTTP request error: {e}")
+        return {}
+    except json.JSONDecodeError as e:
+        logging.error(f"JSON decoding error: {e}")
+        return {}
+
 
 class YTDownloader:
-
     @staticmethod
-    def mp3_options():
-        mp3_options = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-            }],
-            'ffmpeg_location': FFMPEG_PATH,
-            'outtmpl': '%(title)s.%(ext)s',
-            }
-        return mp3_options
-
-    @staticmethod
-    def video_options():
-        video_options = {
-            'format': 'bestvideo+bestaudio/best',
-            'ffmpeg_location': FFMPEG_PATH,
-            'outtmpl': '%(title)s.%(ext)s',
-            }
-        return video_options
-    
-    @staticmethod
-    def download_video(url: str, options: dict) -> str:
-        """
-        yt-dlp를 사용하여 YouTube 영상/오디오 다운로드
-        """
-        try:
-            with yt_dlp.YoutubeDL(options) as ydl:
-                result = ydl.extract_info(url, download=True)
-                return ydl.prepare_filename(result)
-        except Exception as e:
-            print(f"다운로드 실패: {e}")
+    def download_video(video_url: str, option: str, json_url='json/yt_options.json',) -> str:
+        options = read_github_json(json_url)
+        if not options:
+            logging.error("Failed to load options from the JSON file.")
             return None
 
+        download_options = options.get(option)
+        if not download_options:
+            logging.error(f"'{option}' option is not available in the JSON file.")
+            return None
 
-
-
+        try:
+            with yt_dlp.YoutubeDL(download_options) as ydl:
+                result = ydl.extract_info(video_url, download=True)
+                return ydl.prepare_filename(result)
+        except yt_dlp.utils.DownloadError as e:
+            logging.error(f"Download error: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error: {e}")
+        return None
