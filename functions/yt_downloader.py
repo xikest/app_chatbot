@@ -13,7 +13,7 @@ class YTDownloader:
             with yt_dlp.YoutubeDL(options.get(file_type)) as ydl:
                 result = ydl.extract_info(video_url, download=True)
                 file_name = ydl.prepare_filename(result)
-                file_name= file_name.replace(".webm", file_type)
+                file_name= file_name.replace(".webm", f".{file_type}")
                 return file_name
 
         except yt_dlp.utils.DownloadError as e:

@@ -96,7 +96,7 @@ class BotManager:
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         try:
             YT_TYPE = context.user_data.get('YT_TYPE', 'mp3')  # 기본값은 'mp3'
-            file_type = ".mp3" if YT_TYPE == 'mp3' else ".mp4"
+            file_type = f".{YT_TYPE}"
 
             user_message = update.message.text
             url = user_message.strip()  # URL 앞뒤 공백 제거
@@ -114,8 +114,7 @@ class BotManager:
     async def handle_download_task(self, update: Update, context: ContextTypes.DEFAULT_TYPE, url: str, file_type: str):
         """실제 다운로드 및 전송 작업을 처리하는 함수"""
         try:
-            option = 'mp3' if file_type == '.mp3' else 'video'
-            file_name = self.ytd.download_video(url, option)
+            file_name = self.ytd.download_video(url, file_type)
             
             if file_name:
                 with open(file_name, "rb") as file:
