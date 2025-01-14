@@ -5,6 +5,7 @@ from functions.aimanager import AIManager
 from functions.logmanager import LogManager
 from functions.yt_downloader import YTDownloader
 import os
+import asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler
 from telegram.ext import ContextTypes
@@ -91,43 +92,40 @@ class BotManager:
     async def yt_switch_mp4_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data['YT_TYPE'] = 'mp4'
         await update.message.reply_text("File type switched to MP4.")
-        
+
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-
-
         try:
-            YT_TYPE = context.user_data.get('YT_TYPE', 'mp3')  # 기본값을 'mp3'로 설정
-            file_type = None
-            
-            if YT_TYPE == 'mp3':
-                option = 'mp3'
-                file_type = ".mp3"
-            elif YT_TYPE == 'mp4':
-                option = 'video'
-                file_type = ".mp4"
-            
+            YT_TYPE = context.user_data.get('YT_TYPE', 'mp3')  # 기본값은 'mp3'
+            file_type = ".mp3" if YT_TYPE == 'mp3' else ".mp4"
 
             user_message = update.message.text
             url = user_message.strip()  # URL 앞뒤 공백 제거
             if 'youtu.be' not in url and 'youtube.com' not in url:
                 await update.message.reply_text("Invalid YouTube URL. Please provide a valid YouTube link.")
                 return
-            await update.message.reply_text(f"Downloading {file_type[1:].upper()} from: {url}")
             
+            await update.message.reply_text(f"Downloading {file_type[1:].upper()} from: {url}. This might take some time...")
+
+            asyncio.create_task(self.handle_download_task(update, context, url, file_type))
+        except Exception as e:
+            await update.message.reply_text(f"An error occurred: {e}")
+
+
+    async def handle_download_task(self, update: Update, context: ContextTypes.DEFAULT_TYPE, url: str, file_type: str):
+        """실제 다운로드 및 전송 작업을 처리하는 함수"""
+        try:
+            option = 'mp3' if file_type == '.mp3' else 'video'
             file_name = self.ytd.download_video(url, option)
             
-            # .webm 파일을 .mp3로 변환
             if file_name:
-                file_name = file_name.replace(".webm", file_type)
-
                 with open(file_name, "rb") as file:
                     await context.bot.send_document(chat_id=update.message.chat_id, document=file)
                 os.remove(file_name)
             else:
                 await update.message.reply_text("Download failed. Please check the URL.")
         except Exception as e:
-            await update.message.reply_text(f"An error occurred: {e}")
-            
+            await update.message.reply_text(f"An error occurred during the download: {e}")
+
             
     # async def mp4_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 

@@ -16,3 +16,5 @@ ps -ef|grep bot
 git clone https://github.com/xikest/app_chatbot.git
 ## 클론 삭제
 rm -rf app_chatbot
+
+"ffmpeg_location": "ffmpeg/bin/ffmpeg.exe",

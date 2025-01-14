@@ -8,13 +8,14 @@
           "preferredquality": "192"
         }
       ],
-      "ffmpeg_location": "FFMPEG_PATH",
+      "ffmpeg_location": "/usr/bin/ffmpeg",
       "outtmpl": "%(title)s.%(ext)s"
     },
     "video": {
       "format": "bestvideo+bestaudio/best",
-      "ffmpeg_location": "FFMPEG_PATH",
+      "ffmpeg_location": "/usr/bin/ffmpeg",
       "outtmpl": "%(title)s.%(ext)s"
     }
+    
   }
   
