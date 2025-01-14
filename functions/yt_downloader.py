@@ -4,6 +4,7 @@ import logging
 
 json_path = "./json/yt_options.json" 
 
+
 class YTDownloader:
     @staticmethod
     def download_video(video_url: str, file_type: str) -> str:
