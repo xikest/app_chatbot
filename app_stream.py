@@ -1,21 +1,10 @@
 import streamlit as st
-import os
-import subprocess
 from functions.yt_downloader import YTDownloader
-
-def install_ffmpeg():
-    try:
-        subprocess.run(["ffmpeg", "-version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    except FileNotFoundError:
-        st.warning("ffmpeg is not installed. Installing ffmpeg...")
-        subprocess.check_call([os.sys.executable, "-m", "pip", "install", "ffmpeg"])
 
 st.title("Downloader")
 
-install_ffmpeg()
-
 url = st.text_input("Enter the YouTube URL:", "")
-file_type = st.radio("Select file type:", ["mp4", "mp3"])
+file_type = st.radio("Select file type:", ["mp3", "mp4"])
 ydt = YTDownloader()
 
 if st.button("Download"):

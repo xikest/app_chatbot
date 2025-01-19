@@ -35,9 +35,9 @@ class BotManager:
         # self.app.add_handler(MessageHandler(filters.Document.ALL, self.save_file))
         self.app.add_handler(CommandHandler("mp3", self.yt_switch_mp3_command))
         self.app.add_handler(CommandHandler("mp4", self.yt_switch_mp4_command))
-        yt_pattern = r'https?://(?:www\.)?(?:youtu\.be|youtube\.com)/[\w\-?&=]+'
-        self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex(yt_pattern), self.chatgpt))
-        self.app.add_handler(MessageHandler(filters.TEXT & filters.Regex(yt_pattern), self.yt_download_command))
+        # yt_pattern = r'https?://(?:www\.)?(?:youtu\.be|youtube\.com)/[\w\-?&=]+'
+        self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND), self.chatgpt)
+        # self.app.add_handler(MessageHandler(filters.TEXT & filters.Regex(yt_pattern), self.yt_download_command))
 
 
     async def chatgpt(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -93,37 +93,37 @@ class BotManager:
         context.user_data['YT_TYPE'] = 'mp4'
         await update.message.reply_text("File type switched to MP4.")
 
-    async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        try:
-            YT_TYPE = context.user_data.get('YT_TYPE', 'mp3')  # 기본값은 'mp3'
-            file_type = f".{YT_TYPE}"
+    # async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    #     try:
+    #         YT_TYPE = context.user_data.get('YT_TYPE', 'mp3')  # 기본값은 'mp3'
+    #         file_type = f".{YT_TYPE}"
 
-            user_message = update.message.text
-            url = user_message.strip()  # URL 앞뒤 공백 제거
-            if 'youtu.be' not in url and 'youtube.com' not in url:
-                await update.message.reply_text("Invalid YouTube URL. Please provide a valid YouTube link.")
-                return
+    #         user_message = update.message.text
+    #         url = user_message.strip()  # URL 앞뒤 공백 제거
+    #         if 'youtu.be' not in url and 'youtube.com' not in url:
+    #             await update.message.reply_text("Invalid YouTube URL. Please provide a valid YouTube link.")
+    #             return
             
-            await update.message.reply_text(f"Downloading {file_type[1:].upper()} from: {url}. This might take some time...")
+    #         await update.message.reply_text(f"Downloading {file_type[1:].upper()} from: {url}. This might take some time...")
 
-            asyncio.create_task(self.handle_download_task(update, context, url, file_type))
-        except Exception as e:
-            await update.message.reply_text(f"An error occurred: {e}")
+    #         asyncio.create_task(self.handle_download_task(update, context, url, file_type))
+    #     except Exception as e:
+    #         await update.message.reply_text(f"An error occurred: {e}")
 
 
-    async def handle_download_task(self, update: Update, context: ContextTypes.DEFAULT_TYPE, url: str, file_type: str):
-        """실제 다운로드 및 전송 작업을 처리하는 함수"""
-        try:
-            file_name = self.ytd.download_video(url, file_type)
+    # async def handle_download_task(self, update: Update, context: ContextTypes.DEFAULT_TYPE, url: str, file_type: str):
+    #     """실제 다운로드 및 전송 작업을 처리하는 함수"""
+    #     try:
+    #         file_name = self.ytd.download_video(url, file_type)
             
-            if file_name:
-                with open(file_name, "rb") as file:
-                    await context.bot.send_document(chat_id=update.message.chat_id, document=file)
-                os.remove(file_name)
-            else:
-                await update.message.reply_text("Download failed. Please check the URL.")
-        except Exception as e:
-            await update.message.reply_text(f"An error occurred during the download: {e}")
+    #         if file_name:
+    #             with open(file_name, "rb") as file:
+    #                 await context.bot.send_document(chat_id=update.message.chat_id, document=file)
+    #             os.remove(file_name)
+    #         else:
+    #             await update.message.reply_text("Download failed. Please check the URL.")
+    #     except Exception as e:
+    #         await update.message.reply_text(f"An error occurred during the download: {e}")
 
             
     # async def mp4_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
