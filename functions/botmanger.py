@@ -18,10 +18,13 @@ class BotManager:
     
     
     def __init__(self, token, api_key, firestore_auth='web-driver.json'):
-        self.app = Application.builder().token(token).build()
-        self.aim = AIManager(api_key, gpt_model= "gemini-2.0-flash-exp")
-        self.log = LogManager(json_path=firestore_auth)
         self.ydown_apiurl=os.getenv("ydown_url")
+        gpt_model= os.getenv("GPT_MODEL")
+        self.app = Application.builder().token(token).build()
+        self.aim = AIManager(api_key, gpt_model= gpt_model)
+        self.log = LogManager(json_path=firestore_auth)
+        
+        
 
     async def run(self, data):
         update = Update.de_json(data, self.app.bot)
