@@ -88,6 +88,15 @@ class BotManager:
             
 
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        def extract_title_from_url(url):
+            # URL에서 파일 이름만 추출
+            file_name = url.split('/')[-1]  # 마지막 부분을 추출
+            # 퍼센트 인코딩된 부분을 디코딩
+            decoded_name = urllib.parse.unquote(file_name)
+            # 파일 이름에서 확장자 제거
+            title = decoded_name.rsplit('.', 1)[0]
+            return title
+        
         try:
             # URL과 파일 타입 처리
             url = update.message.text.strip()
@@ -103,9 +112,9 @@ class BotManager:
                 url = response.json()['file_name']
                 special_chars = r'[\[\]()_`*~>#+\-.!]'
                 url = re.sub(special_chars, lambda match: f'\\{match.group(0)}', url)
-                
+                title = extract_title_from_url(url)
                 await update.message.reply_text(
-                    f"[{yt_type}]({url})",
+                    f"[{title}|{yt_type}]({url})",
                     parse_mode="MarkdownV2")
             else:
                 await update.message.reply_text(f"파일 다운로드 실패: {response.status_code}, {response.json()['detail']}")
