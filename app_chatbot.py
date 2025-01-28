@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from functions import BotManager
 import os
-import subprocess
 import uvicorn
 
 

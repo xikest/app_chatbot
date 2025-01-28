@@ -100,8 +100,8 @@ class BotManager:
             response_json = response.json()
             link_dict = response_json['file_name']
             for title, link in link_dict.items():
+                title = title.rsplit('.', 1)[0]
                 title = self.escape_markdown(title)
-                title = title.replace(".mp3", "")
                 link = self.escape_markdown(link)
                 await update.message.reply_text(
                                     f"\\#mp3\n[{title}]({link})",
@@ -139,7 +139,6 @@ class BotManager:
                         url = self.escape_markdown(url)
                         title = extract_title_from_url(url)
                         title = self.escape_markdown(title)
-                        title = title.replace(".mp3", "")
                         # 응답 메시지 전송
                         await update.message.reply_text(
                             f"\\#mp3\n[{title}]({url})",
