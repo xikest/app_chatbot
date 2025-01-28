@@ -113,13 +113,6 @@ class BotManager:
 
     
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        def extract_title_from_url(url):
-            file_name = url.split('/')[-1].split('?')[0]  
-            decoded_file_name = urllib.parse.unquote(file_name)
-            title = decoded_file_name.rsplit('.', 1)[0]
-            return title
-        
-
         try:
             # URL과 파일 타입 처리
             url = update.message.text.strip()
@@ -135,13 +128,12 @@ class BotManager:
                 async with session.post(self.ydown_url, json=data) as response:
                     if response.status == 200:
                         response_json = await response.json()  # JSON 응답 비동기로 처리
-                        url = response_json['file_name']
-                        url = self.escape_markdown(url)
-                        title = extract_title_from_url(url)
-                        title = self.escape_markdown(title)
-                        # 응답 메시지 전송
+                        url = self.escape_markdown(response_json['url'])
+                        label = response_json['label']
+                        label = label.rsplit('.', 1)[0]
+                        label = self.escape_markdown(label)
                         await update.message.reply_text(
-                            f"\\#mp3\n[{title}]({url})",
+                            f"\\#mp3\n[{label}]({url})",
                             parse_mode="MarkdownV2"
                         )
                     else:
