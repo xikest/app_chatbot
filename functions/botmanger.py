@@ -8,6 +8,7 @@ import urllib.parse
 import os
 import re
 import asyncio
+import aiohttp
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler
 from telegram.ext import ContextTypes
@@ -19,6 +20,7 @@ class BotManager:
     
     def __init__(self, token, api_key, firestore_auth='web-driver.json'):
         self.ydown_url=os.getenv("ydown_url")
+        self.ymp3_url=os.getenv("ymp3_url")
         self.storage_name = os.getenv("chat_bot_storage_name")
         gpt_model= os.getenv("GPT_MODEL")
         self.app = Application.builder().token(token).build()
@@ -37,7 +39,7 @@ class BotManager:
         self.app.add_handler(CommandHandler("new", self.newbot_command))
         # self.app.add_handler(CommandHandler("img", self.img_command))
         # self.app.add_handler(MessageHandler(filters.Document.ALL, self.save_file))
-        # self.app.add_handler(CommandHandler("mp3", self.yt_switch_mp3_command))
+        self.app.add_handler(CommandHandler("mp3", self.get_mp3_list_command))
         yt_pattern = r'https?://(?:www\.)?(?:youtu\.be|youtube\.com)/[\w\-?&=]+'
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex(yt_pattern), self.chatgpt))
         self.app.add_handler(MessageHandler(filters.TEXT & filters.Regex(yt_pattern), self.yt_download_command))
@@ -88,52 +90,75 @@ class BotManager:
             await file.download_to_drive(file_path)
             await update.message.reply_text(f"The file has been saved.: {file_path}")
             
+    async def get_mp3_list_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        
 
+        url = self.ymp3_url  
+        params = {"storage_name": self.storage_name}
+        response = requests.post(url, params=params)
+        if response.status_code == 200:
+            response_json = response.json()
+            link_dict = response_json['file_name']
+            for title, link in link_dict.items():
+                title = self.escape_markdown(title)
+                title = title.replace(".mp3", "")
+                link = self.escape_markdown(link)
+                await update.message.reply_text(
+                                    f"\\#mp3\n[{title}]({link})",
+                                    parse_mode="MarkdownV2"
+                                )
+            
+        else:
+             await update.message.reply_text(f"response fail, status code: {response.status_code}, error message: {response.text}")
+
+    
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         def extract_title_from_url(url):
-            file_name = url.split('/')[-1]  # 마지막 부분을 추출
-            decoded_name = urllib.parse.unquote(file_name)
-            title = decoded_name.rsplit('.', 1)[0]
+            file_name = url.split('/')[-1].split('?')[0]  
+            decoded_file_name = urllib.parse.unquote(file_name)
+            title = decoded_file_name.rsplit('.', 1)[0]
             return title
         
+
         try:
             # URL과 파일 타입 처리
             url = update.message.text.strip()
-            
-            # yt_type = context.user_data.get('yt_type', 'mp3')
-            yt_type = 'mp3'
             data = {
                 "url": f"{url}",  
-                "file_type": f"{yt_type}",
-                "storage_name" : self.storage_name 
+                "file_type": "mp3",
+                "storage_name": self.storage_name
             }
-            response = requests.post(self.ydown_url, json=data)
-            if response.status_code == 200:
-                special_chars = r'([_*\[\]()~`>#+\-=|{}.!\\])'
 
-                def escape_markdown(text: str) -> str:
-                    """MarkdownV2에서 특수 문자를 escape"""
-                    return re.sub(special_chars, r'\\\1', text)
+            # 비동기로 POST 요청 전송 (타임아웃 무제한)
+            timeout = aiohttp.ClientTimeout(total=None)  # 타임아웃 해제
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(self.ydown_url, json=data) as response:
+                    if response.status == 200:
+                        response_json = await response.json()  # JSON 응답 비동기로 처리
+                        url = response_json['file_name']
+                        url = self.escape_markdown(url)
+                        title = extract_title_from_url(url)
+                        title = self.escape_markdown(title)
+                        title = title.replace(".mp3", "")
+                        # 응답 메시지 전송
+                        await update.message.reply_text(
+                            f"\\#mp3\n[{title}]({url})",
+                            parse_mode="MarkdownV2"
+                        )
+                    else:
+                        error_detail = await response.json()
+                        await update.message.reply_text(
+                            f"파일 다운로드 실패: {response.status}, {error_detail.get('detail', '알 수 없는 오류')}"
+                        )
 
-                url = response.json()['file_name']
-                url = escape_markdown(url)
-                title = extract_title_from_url(url)
-                title = escape_markdown(title)
- 
-                await update.message.reply_text(
-                    f"\\#{yt_type}\n[{title}]({url})",
-                    parse_mode="MarkdownV2")
-            
-            else:
-                await update.message.reply_text(f"파일 다운로드 실패: {response.status_code}, {response.json()['detail']}")
-                
         except Exception as e:
-                    await update.message.reply_text(f"파일 다운로드 중 오류가 발생했습니다. 나중에 다시 시도해주세요.{e}")
-
-    # async def yt_switch_mp3_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    #     context.user_data['yt_type'] = 'mp3'
-    #     await update.message.reply_text("File type switched to MP3.")
-        
-    # async def yt_switch_mp4_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    #     context.user_data['yt_type'] = 'mp4'
-        # await update.message.reply_text(f"File type switched to MP4.")
+            await update.message.reply_text(
+                f"파일 다운로드 중 오류가 발생했습니다. 나중에 다시 시도해주세요.\n오류 내용: {e}"
+            )
+    
+    
+    def escape_markdown(self, text: str) -> str:
+        special_chars = r'([_*\[\]()~`>#+\-=|{}.!\\])'
+        """MarkdownV2에서 특수 문자를 escape"""
+        return re.sub(special_chars, r'\\\1', text)
+    
