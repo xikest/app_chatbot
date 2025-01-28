@@ -18,7 +18,8 @@ class BotManager:
     
     
     def __init__(self, token, api_key, firestore_auth='web-driver.json'):
-        self.ydown_apiurl=os.getenv("ydown_url")
+        self.ydown_url=os.getenv("ydown_url")
+        self.ydown_url = "https://app-ydown-646543566973.asia-northeast3.run.app/download/"
         gpt_model= os.getenv("GPT_MODEL")
         self.app = Application.builder().token(token).build()
         self.aim = AIManager(api_key, gpt_model= gpt_model)
@@ -92,11 +93,8 @@ class BotManager:
 
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         def extract_title_from_url(url):
-            # URL에서 파일 이름만 추출
             file_name = url.split('/')[-1]  # 마지막 부분을 추출
-            # 퍼센트 인코딩된 부분을 디코딩
             decoded_name = urllib.parse.unquote(file_name)
-            # 파일 이름에서 확장자 제거
             title = decoded_name.rsplit('.', 1)[0]
             return title
         
@@ -110,14 +108,21 @@ class BotManager:
                 "url": f"{url}",  
                 "file_type": f"{yt_type}"  
             }
-            response = requests.post(self.ydown_apiurl, json=data)
+            response = requests.post(self.ydown_url, json=data)
             if response.status_code == 200:
+                special_chars = r'([_*\[\]()~`>#+\-=|{}.!\\])'
+
+                def escape_markdown(text: str) -> str:
+                    """MarkdownV2에서 특수 문자를 escape"""
+                    return re.sub(special_chars, r'\\\1', text)
+
                 url = response.json()['file_name']
-                special_chars = r'[\[\]()_`*~>#+\-.!]'
-                url = re.sub(special_chars, lambda match: f'\\{match.group(0)}', url)
-                title = extract_title_from_url(url)
+                url = escape_markdown(url)
+                title = escape_markdown(extract_title_from_url(url))
+
+                # 메시지 전송
                 await update.message.reply_text(
-                    f"[{title}|{yt_type}]({url})",
+                    f"[{title}\\|{yt_type}]({url})",
                     parse_mode="MarkdownV2")
             else:
                 await update.message.reply_text(f"파일 다운로드 실패: {response.status_code}, {response.json()['detail']}")
