@@ -19,14 +19,12 @@ class BotManager:
     
     def __init__(self, token, api_key, firestore_auth='web-driver.json'):
         self.ydown_url=os.getenv("ydown_url")
-        self.ydown_url = "https://app-ydown-646543566973.asia-northeast3.run.app/download/"
+        self.storage_name = os.getenv("chat_bot_storage_name")
         gpt_model= os.getenv("GPT_MODEL")
         self.app = Application.builder().token(token).build()
         self.aim = AIManager(api_key, gpt_model= gpt_model)
         self.log = LogManager(json_path=firestore_auth)
         
-        
-
     async def run(self, data):
         update = Update.de_json(data, self.app.bot)
         if not self.app.handlers:
@@ -106,7 +104,8 @@ class BotManager:
             yt_type = 'mp3'
             data = {
                 "url": f"{url}",  
-                "file_type": f"{yt_type}"  
+                "file_type": f"{yt_type}",
+                "storage_name" : self.storage_name 
             }
             response = requests.post(self.ydown_url, json=data)
             if response.status_code == 200:
