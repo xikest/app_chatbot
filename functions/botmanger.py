@@ -122,8 +122,9 @@ class BotManager:
 
                 # 메시지 전송
                 await update.message.reply_text(
-                    f"[{title}|{yt_type}]({url})",
+                    f"\\#{yt_type}\n[{title}]({url})",
                     parse_mode="MarkdownV2")
+            
             else:
                 await update.message.reply_text(f"파일 다운로드 실패: {response.status_code}, {response.json()['detail']}")
                 
