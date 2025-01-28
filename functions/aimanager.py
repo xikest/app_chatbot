@@ -17,7 +17,7 @@ class AIManager:
             self.messages_prompt.extend(previous_chats)
             
         self.messages_prompt.append(prompt)
-        print(self.messages_prompt)
+        # print(self.messages_prompt)
         response = self.client.chat.completions.create(model=self.gpt_model, messages=self.messages_prompt, timeout=60)
         answer = response.choices[0].message.content
         return answer

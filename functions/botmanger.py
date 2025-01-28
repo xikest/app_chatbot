@@ -40,7 +40,7 @@ class BotManager:
         # self.app.add_handler(CommandHandler("img", self.img_command))
         # self.app.add_handler(MessageHandler(filters.Document.ALL, self.save_file))
         self.app.add_handler(CommandHandler("mp3", self.get_mp3_list_command))
-        yt_pattern = r'https?://(?:www\.)?(?:youtu\.be|youtube\.com)/[\w\-?&=]+'
+        yt_pattern = r'https?://(?:www\.)?(?:youtu\.be|youtube\.com)/(?!.*(?:list=))'
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex(yt_pattern), self.chatgpt))
         self.app.add_handler(MessageHandler(filters.TEXT & filters.Regex(yt_pattern), self.yt_download_command))
 
@@ -100,13 +100,10 @@ class BotManager:
             response_json = response.json()
             link_dict = response_json['mp3list']
             for title, link in link_dict.items():
-                title = title.rsplit('.', 1)[0]
-                title = self.escape_markdown(title)
-                link = self.escape_markdown(link)
-                await update.message.reply_text(
-                                    f"\\#mp3\n[{title}]({link})",
-                                    parse_mode="MarkdownV2"
-                                )
+                await update.message.reply_audio(
+                    audio=link,  # URL을 통해 오디오 파일 전송
+                )
+        
             
         else:
              await update.message.reply_text(f"response fail, status code: {response.status_code}, error message: {response.text}")
@@ -128,14 +125,11 @@ class BotManager:
                 async with session.post(self.ydown_url, json=data) as response:
                     if response.status == 200:
                         response_json = await response.json()  # JSON 응답 비동기로 처리
-                        url = self.escape_markdown(response_json['url'])
-                        label = response_json['label']
-                        label = label.rsplit('.', 1)[0]
-                        label = self.escape_markdown(label)
-                        await update.message.reply_text(
-                            f"\\#mp3\n[{label}]({url})",
-                            parse_mode="MarkdownV2"
+                        url = response_json['url']
+                        await update.message.reply_audio(
+                            audio=url,  # URL을 통해 오디오 파일 전송
                         )
+                        
                     else:
                         error_detail = await response.json()
                         await update.message.reply_text(
@@ -144,12 +138,7 @@ class BotManager:
 
         except Exception as e:
             await update.message.reply_text(
-                f"파일 다운로드 중 오류가 발생했습니다. 나중에 다시 시도해주세요.\n오류 내용: {e}"
+                f"파일 다운로드 중 오류가 발생했습니다. 나중에 다시 시도해주세요."
             )
     
-    
-    def escape_markdown(self, text: str) -> str:
-        special_chars = r'([_*\[\]()~`>#+\-=|{}.!\\])'
-        """MarkdownV2에서 특수 문자를 escape"""
-        return re.sub(special_chars, r'\\\1', text)
     
