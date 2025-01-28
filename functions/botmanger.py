@@ -98,7 +98,7 @@ class BotManager:
         response = requests.post(url, params=params)
         if response.status_code == 200:
             response_json = response.json()
-            link_dict = response_json['file_name']
+            link_dict = response_json['mp3list']
             for title, link in link_dict.items():
                 title = title.rsplit('.', 1)[0]
                 title = self.escape_markdown(title)
