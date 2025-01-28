@@ -118,9 +118,9 @@ class BotManager:
 
                 url = response.json()['file_name']
                 url = escape_markdown(url)
-                title = escape_markdown(extract_title_from_url(url))
-
-                # 메시지 전송
+                title = extract_title_from_url(url)
+                title = escape_markdown(title)
+ 
                 await update.message.reply_text(
                     f"\\#{yt_type}\n[{title}]({url})",
                     parse_mode="MarkdownV2")
