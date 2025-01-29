@@ -20,7 +20,6 @@ class BotManager:
     
     def __init__(self, token, api_key, firestore_auth='web-driver.json'):
         self.ydown_url=os.getenv("ydown_url")
-        self.ymp3_url=os.getenv("ymp3_url")
         self.storage_name = os.getenv("chat_bot_storage_name")
         gpt_model= os.getenv("GPT_MODEL")
         self.app = Application.builder().token(token).build()
