@@ -92,24 +92,29 @@ class BotManager:
             
     async def get_mp3_list_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         
-
-        url = self.ymp3_url  
+        ydown_mp3list_url = self.ydown_url+"/mp3list/"
         params = {"storage_name": self.storage_name}
-        response = requests.post(url, params=params)
+        response = requests.post(ydown_mp3list_url, params=params)
         if response.status_code == 200:
             response_json = response.json()
             link_dict = response_json['mp3list']
             for title, link in link_dict.items():
-                await update.message.reply_audio(
-                    audio=link,  # URL을 통해 오디오 파일 전송
-                )
-        
+                title = title.rsplit('.', 1)[0]
+                title = self.escape_markdown(title)
+                link = self.escape_markdown(link)
+                await update.message.reply_text(
+                                    f"\\#mp3\n[{title}]({link})",
+                                    parse_mode="MarkdownV2"
+                                )
             
         else:
              await update.message.reply_text(f"response fail, status code: {response.status_code}, error message: {response.text}")
 
     
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+        ydown_download_url = self.ydown_url+"/download/"
+
         try:
             # URL과 파일 타입 처리
             url = update.message.text.strip()
@@ -122,14 +127,19 @@ class BotManager:
             # 비동기로 POST 요청 전송 (타임아웃 무제한)
             timeout = aiohttp.ClientTimeout(total=None)  # 타임아웃 해제
             async with aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.post(self.ydown_url, json=data) as response:
+                async with session.post(ydown_download_url, json=data) as response:
                     if response.status == 200:
                         response_json = await response.json()  # JSON 응답 비동기로 처리
                         url = response_json['url']
-                        await update.message.reply_audio(
-                            audio=url,  # URL을 통해 오디오 파일 전송
+                        url = self.escape_markdown(url)
+                        title = response_json['label']
+                        title = title.rsplit('.', 1)[0]
+                        title = self.escape_markdown(title)
+                        # 응답 메시지 전송
+                        await update.message.reply_text(
+                            f"\\#mp3\n[{title}]({url})",
+                            parse_mode="MarkdownV2"
                         )
-                        
                     else:
                         error_detail = await response.json()
                         await update.message.reply_text(
@@ -141,4 +151,9 @@ class BotManager:
                 f"파일 다운로드 중 오류가 발생했습니다. 나중에 다시 시도해주세요."
             )
     
+    
+    def escape_markdown(self, text: str) -> str:
+        special_chars = r'([_*\[\]()~`>#+\-=|{}.!\\])'
+        """MarkdownV2에서 특수 문자를 escape"""
+        return re.sub(special_chars, r'\\\1', text)
     
