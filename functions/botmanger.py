@@ -105,6 +105,8 @@ class BotManager:
         ydown_mp3list_url = self.ydown_url+"/mp3list/"
         params = {"storage_name": storage_name}
         response = requests.post(ydown_mp3list_url, params=params)
+        
+        
         if response.status_code == 200:
             response_json = response.json()
             link_dict = response_json['mp3list']
@@ -124,14 +126,15 @@ class BotManager:
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         ydown_download_url = self.ydown_url+"/download/"
-
+        
+        
         try:
             # URL과 파일 타입 처리
             url = update.message.text.strip()
             data = {
                 "url": f"{url}",  
                 "file_type": "mp3",
-                "storage_name": self.storage_name
+                "storage_name": self.chatbot_storage_name
             }
 
             # 비동기로 POST 요청 전송 (타임아웃 무제한)
@@ -158,7 +161,7 @@ class BotManager:
 
         except Exception as e:
             await update.message.reply_text(
-                f"파일 다운로드 중 오류가 발생했습니다. 나중에 다시 시도해주세요."
+                f"파일 다운로드 중 오류가 발생했습니다. 나중에 다시 시도해주세요.{e}"
             )
     
     
