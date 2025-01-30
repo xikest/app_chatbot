@@ -22,6 +22,7 @@ class BotManager:
         self.ydown_url=os.getenv("ydown_url")
         self.chatbot_storage_name = os.getenv("chat_bot_storage_name")
         self.newsbot_storage_name= os.getenv("news_bot_storage_name")
+        self.player_url=os.getenv("player_url")
         gpt_model= os.getenv("GPT_MODEL")
         self.app = Application.builder().token(token).build()
         self.aim = AIManager(api_key, gpt_model= gpt_model)
@@ -41,6 +42,8 @@ class BotManager:
         # self.app.add_handler(MessageHandler(filters.Document.ALL, self.save_file))
         self.app.add_handler(CommandHandler("mp3", self.get_song_mp3_list_command))
         self.app.add_handler(CommandHandler("news", self.get_news_mp3_list_command))
+        self.app.add_handler(CommandHandler("player", self.player_command))
+        
         yt_pattern = r'https?://(?:www\.)?(?:youtu\.be|youtube\.com)/(?!.*(?:list=))'
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex(yt_pattern), self.chatgpt))
         self.app.add_handler(MessageHandler(filters.TEXT & filters.Regex(yt_pattern), self.yt_download_command))
@@ -98,7 +101,9 @@ class BotManager:
     async def get_news_mp3_list_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await self._mp3_list_command(update = update, context = context, storage_name=self.newsbot_storage_name )
         
-            
+    async def player_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        user_id = update.message.chat_id
+        await self.app.bot.send_message(chat_id=user_id, text=self.player_url)
         
     async def _mp3_list_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE, storage_name) -> None:
         
