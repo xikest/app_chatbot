@@ -145,7 +145,6 @@ class BotManager:
             url = update.message.text.strip()
             doc_key = url_to_doc_key_sha256(url)
 
-            self.collection_name = "news_collection"
             if self.firestore.is_doc_key_exist(doc_key=doc_key, collection_name = self.collection_name):
                 storage_name = self.newsbot_storage_name
             else:
