@@ -4,14 +4,14 @@ from telegram import Update
 from functions.aimanager import AIManager
 from functions.logmanager import LogManager
 import requests
-import urllib.parse
+import hashlib
 import os
 import re
-import asyncio
 import aiohttp
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler
 from telegram.ext import ContextTypes
+from tools.gcp.firestoremanager import FirestoreManager
 
 
 class BotManager:
@@ -23,10 +23,12 @@ class BotManager:
         self.chatbot_storage_name = os.getenv("chat_bot_storage_name")
         self.newsbot_storage_name= os.getenv("news_bot_storage_name")
         self.player_url=os.getenv("player_url")
+        self.collection_name=os.getenv("firestore_collection_name")
         gpt_model= os.getenv("GPT_MODEL")
         self.app = Application.builder().token(token).build()
         self.aim = AIManager(api_key, gpt_model= gpt_model)
         self.log = LogManager(json_path=firestore_auth)
+        self.firestore = FirestoreManager(firestore_auth)
         
     async def run(self, data):
         update = Update.de_json(data, self.app.bot)
@@ -103,7 +105,9 @@ class BotManager:
         
     async def player_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_id = update.message.chat_id
-        await self.app.bot.send_message(chat_id=user_id, text=self.player_url)
+        player_url = self.escape_markdown(self.player_url)
+        message = f"[Song Player]({player_url})"
+        await self.app.bot.send_message(chat_id=user_id, text=message, parse_mode="MarkdownV2")
         
     async def _mp3_list_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE, storage_name) -> None:
         
@@ -130,18 +134,29 @@ class BotManager:
     
     async def yt_download_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
+        def url_to_doc_key_sha256(url: str) -> str:
+            return hashlib.sha256(url.encode('utf-8')).hexdigest()
+    
+        
         ydown_download_url = self.ydown_url+"/download/"
         
-        
         try:
-            # URL과 파일 타입 처리
+
             url = update.message.text.strip()
+            doc_key = url_to_doc_key_sha256(url)
+
+            self.collection_name = "news_collection"
+            if self.firestore.is_doc_key_exist(doc_key=doc_key, collection_name = self.collection_name):
+                storage_name = self.newsbot_storage_name
+            else:
+                storage_name = self.chatbot_storage_name
+                
             data = {
                 "url": f"{url}",  
                 "file_type": "mp3",
-                "storage_name": self.chatbot_storage_name
+                "storage_name": storage_name
             }
-
+            
             # 비동기로 POST 요청 전송 (타임아웃 무제한)
             timeout = aiohttp.ClientTimeout(total=None)  # 타임아웃 해제
             async with aiohttp.ClientSession(timeout=timeout) as session:
