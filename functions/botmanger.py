@@ -22,7 +22,8 @@ class BotManager:
         self.ydown_url=os.getenv("ydown_url")
         self.chatbot_storage_name = os.getenv("chat_bot_storage_name")
         self.newsbot_storage_name= os.getenv("news_bot_storage_name")
-        self.player_url=os.getenv("player_url")
+        self.player_n_url=os.getenv("player_n_url")
+        self.player_m_url=os.getenv("player_m_url")
         self.collection_name=os.getenv("firestore_collection_name")
         gpt_model= os.getenv("GPT_MODEL")
         self.app = Application.builder().token(token).build()
@@ -44,7 +45,8 @@ class BotManager:
         # self.app.add_handler(MessageHandler(filters.Document.ALL, self.save_file))
         self.app.add_handler(CommandHandler("mp3", self.get_song_mp3_list_command))
         self.app.add_handler(CommandHandler("news", self.get_news_mp3_list_command))
-        self.app.add_handler(CommandHandler("player", self.player_command))
+        self.app.add_handler(CommandHandler("player_m", self.player_m_command))
+        self.app.add_handler(CommandHandler("player_n", self.player_n_command))
         
         yt_pattern = r'https?://(?:www\.)?(?:youtu\.be|youtube\.com)/(?!.*(?:list=))'
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & ~filters.Regex(yt_pattern), self.chatgpt))
@@ -103,10 +105,17 @@ class BotManager:
     async def get_news_mp3_list_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await self._mp3_list_command(update = update, context = context, storage_name=self.newsbot_storage_name )
         
-    async def player_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    async def player_m_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user_id = update.message.chat_id
-        player_url = self.escape_markdown(self.player_url)
+        player_url = self.escape_markdown(self.player_m)
         message = f"[Song Player]({player_url})"
+        await self.app.bot.send_message(chat_id=user_id, text=message, parse_mode="MarkdownV2")
+
+        
+    async def player_n_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        user_id = update.message.chat_id
+        player_url = self.escape_markdown(self.player_n)
+        message = f"[News Player]({player_url})"
         await self.app.bot.send_message(chat_id=user_id, text=message, parse_mode="MarkdownV2")
         
     async def _mp3_list_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE, storage_name) -> None:
